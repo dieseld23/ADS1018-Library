@@ -1,7 +1,8 @@
 /**
 *  Arduino Library for Texas Instruments ADS1018 - 12-Bit Analog-to-Digital Converter with 
 *  Internal Reference and Temperature Sensor
-*  
+*
+*  @author Dan Maslach <dmaslach@gmail.com>
 *  @author Ryan Wagoner <rswagoner@gmail.com>
 *  @author Vishnu Easwaran E <easwaranvishnu@gmail.com>
 *  derived from the work of Alvaro Salazar <alvaro@denkitronik.com>
@@ -13,7 +14,8 @@
  *
  * Copyright 2018 Vishnu Easwaran E <easwaranvishnu@gmail.com>
  * Copyright 2020 Ryan Wagoner <rswagoner@gmail.com>
- *
+ * Copyright 2021 Dan Maslach Wagoner <dmaslach@gmail.com>
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -94,7 +96,7 @@ class ADS1018 {
         union Config  configRegister;               ///< Config register
 
         // Bit constant
-        const long int SCLK        = 1000000;       ///< ADS1018 SCLK frequency: 4000000 Hz Maximum for ADS1018 (4Mhz)
+        const long int SCLK        = 2000000;       ///< ADS1018 SCLK frequency: 4000000 Hz Maximum for ADS1018 (4Mhz)
 
         // Used by "SS" bit
         const uint8_t START_NOW    = 1;             ///< Start of conversion in single-shot mode

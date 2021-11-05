@@ -2,6 +2,7 @@
 *  Arduino Library for Texas Instruments ADS1018 - 12-Bit Analog-to-Digital Converter with 
 *  Internal Reference and Temperature Sensor
 *  
+*  @author Dan Maslach <dmaslach@gmail.com>
 *  @author Ryan Wagoner <rswagoner@gmail.com>
 *  @author Vishnu Easwaran E <easwaranvishnu@gmail.com>
 *  derived from the work of Alvaro Salazar <alvaro@denkitronik.com>
@@ -13,6 +14,7 @@
  *
  * Copyright 2018 Vishnu Easwaran E <easwaranvishnu@gmail.com>
  * Copyright 2020 Ryan Wagoner <rswagoner@gmail.com>
+ * Copyright 2021 Dan Maslach Wagoner <dmaslach@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -144,28 +146,26 @@ uint16_t ADS1018::readSingle(union Config config) {
     // Send config
     digitalWrite(cs, LOW);
     delayMicroseconds(10);
+    dataMSB = SPI.transfer(config.byte.msb);
+    dataLSB = SPI.transfer(config.byte.msb);
     SPI.transfer(config.byte.msb);
     SPI.transfer(config.byte.lsb);
-    config.byte.msb = SPI.transfer(0);
-    config.byte.lsb = SPI.transfer(0);
+
+    //config.byte.msb = SPI.transfer(0);
+    //config.byte.lsb = SPI.transfer(0);
     
     delay(CONV_TIME[config.bits.rate]);
     
     // Read result  
-    dataMSB = SPI.transfer(0);
-    dataLSB = SPI.transfer(0);
-    SPI.transfer(0);
-    SPI.transfer(0);
+
     digitalWrite(cs, HIGH);
     delayMicroseconds(10);
     
     SPI.endTransaction();
     
-    //DEBUG_ADS1018_CONFIG(config);
-    
+    DEBUG_ADS1018_CONFIG(config);
     convRegister  = (((dataMSB)<<8 | (dataLSB)) >> 4); //Moving MSB and LSB to 16 bit and making it right-justified; 4 because 12bit value
     convRegister &= 0x0FFF; //Making sure first 4 bits are 0
-    
     DEBUG_ADS1018_ADC(convRegister);
     
     return convRegister;
