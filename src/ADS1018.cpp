@@ -68,7 +68,7 @@ void ADS1018::begin() {
     pinMode(cs, OUTPUT);
     digitalWrite(cs, HIGH);
     SPI.begin();
-    configRegister.bits={RESERVED, VALID_CFG, PULLUP, ADC_MODE, RATE_1600SPS, SINGLE_SHOT, FSR_2048, DIFF_0_1, START_NOW}; //Default values
+    configRegister.bits={RESERVED, VALID_CFG, PULLUP, ADC_MODE, RATE_128SPS, SINGLE_SHOT, FSR_6144, AIN_1, START_NOW}; //Default values
 }
 
 /*
@@ -146,23 +146,23 @@ uint16_t ADS1018::readSingle(union Config config) {
     // Send config
     digitalWrite(cs, LOW);
     delayMicroseconds(10);
-    dataMSB = SPI.transfer(config.byte.msb);
-    dataLSB = SPI.transfer(config.byte.msb);
     SPI.transfer(config.byte.msb);
     SPI.transfer(config.byte.lsb);
-
-    //config.byte.msb = SPI.transfer(0);
-    //config.byte.lsb = SPI.transfer(0);
-    
+    SPI.transfer(config.byte.msb);
+    SPI.transfer(config.byte.lsb);
     delay(CONV_TIME[config.bits.rate]);
     
     // Read result  
-
+    dataMSB = SPI.transfer(config.byte.msb);
+    dataLSB = SPI.transfer(config.byte.lsb);
+    SPI.transfer(0);
+    SPI.transfer(0);
     digitalWrite(cs, HIGH);
-    delayMicroseconds(10);
-    
+
+
+    delay(CONV_TIME[config.bits.rate]);
     SPI.endTransaction();
-    
+
     DEBUG_ADS1018_CONFIG(config);
     convRegister  = (((dataMSB)<<8 | (dataLSB)) >> 4); //Moving MSB and LSB to 16 bit and making it right-justified; 4 because 12bit value
     convRegister &= 0x0FFF; //Making sure first 4 bits are 0
